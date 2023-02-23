@@ -1,24 +1,37 @@
 # ti_am6231_u-boot
 
-< SDK 정보 >
+## SDK 정보
+
 https://www.ti.com/tool/PROCESSOR-SDK-AM62X
+
 ti-processor-sdk-linux-am62xx-evm-08.05.00.21 기반
 
-< 참고 링크 >
+
+
+## 참고 링크
+
 https://software-dl.ti.com/processor-sdk-linux/esd/AM62X/08_05_00_21/exports/docs/linux/Overview_Building_the_SDK.html
 
 
-#1 의존성 패키지 설치
+
+
+## 의존성 패키지 설치
+
 sudo apt-get install build-essential autoconf automake bison flex libssl-dev bc u-boot-tools python diffstat texinfo gawk chrpath dos2unix wget unzip socat doxygen libc6:i386 libncurses5:i386 libstdc++6:i386 libz1:i386 g++-multilib git python3-distutils python3-apt
 
-#2 빌드 방법
+
+## 빌드 방법
+
 SDK 설치 경로의 Makefile 과 Rules.make 파일을 참조
 
+
 빌드 방법 #1
+```cpp
 yjhong@ubuntu18:~/kisan/TI_AM6231/ti-processor-sdk-linux-am62xx-evm-08.05.00.21$ make u-boot-a53
 ===================================
 Building U-boot for A53
 ===================================
+
 make -j 2 -C /home/yjhong/kisan/TI_AM6231/ti-processor-sdk-linux-am62xx-evm-08.05.00.21/board-support/u-boot-* CROSS_COMPILE=/home/yjhong/kisan/TI_AM6231/ti-processor-sdk-linux-am62xx-evm-08.05.00.21/linux-devkit/sysroots/x86_64-arago-linux/usr/bin/aarch64-none-linux-gnu- \
      am62x_evm_a53_defconfig O=/home/yjhong/kisan/TI_AM6231/ti-processor-sdk-linux-am62xx-evm-08.05.00.21/board-support/u-boot_build/a53
 make[1]: 디렉터리 '/home/yjhong/kisan/TI_AM6231/ti-processor-sdk-linux-am62xx-evm-08.05.00.21/board-support/u-boot-2021.01+gitAUTOINC+3983bffabc-g3983bffabc' 들어감
@@ -26,9 +39,11 @@ make[2]: 디렉터리 '/home/yjhong/kisan/TI_AM6231/ti-processor-sdk-linux-am62x
   GEN     ./Makefile
   HOSTCC  scripts/basic/fixdep
 ...
+```
 
 
 빌드 방법 #2
+```cpp
 yjhong@ubuntu18:~/kisan/TI_AM6231/u-boot/trunk/u-boot-2021.01/configs$ ls -al
 ...
 -rw-r--r-- 1 yjhong yjhong 2799 12월 14 20:42 am62ax_evm_a53_defconfig
@@ -48,16 +63,17 @@ yjhong@ubuntu18:~/kisan/TI_AM6231/u-boot/trunk/u-boot-2021.01/configs$ ls -al
 -rw-r--r-- 1 yjhong yjhong 4873 12월 14 20:42 am65x_hs_evm_a53_defconfig
 -rw-r--r-- 1 yjhong yjhong 3624 12월 14 20:42 am65x_hs_evm_r5_defconfig
 ...
+```
 
-
+```cpp
 R5 용 컴파일러
 yjhong@ubuntu18:~/kisan/TI_AM6231/u-boot/trunk/u-boot-2021.01$ export TOOLCHAIN_PATH_ARMV7=/home/yjhong/kisan/TI_AM6231/toolchain/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf
 
 A53용 컴파일러
 yjhong@ubuntu18:~/kisan/TI_AM6231/u-boot/trunk/u-boot-2021.01$ export TOOLCHAIN_PATH_ARMV8=/home/yjhong/kisan/TI_AM6231/toolchain/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu
+```
 
-
-
+```cpp
 yjhong@ubuntu18:~/kisan/TI_AM6231/u-boot/trunk$ git clone https://git.ti.com/git/security-development-tools/core-secdev-k3.git -b master
 'core-secdev-k3'에 복제합니다...
 remote: Enumerating objects: 43, done.
@@ -76,21 +92,24 @@ lrwxrwxrwx  1 yjhong yjhong   48  2월 22 14:26 u-boot-2021.01 -> u-boot-2021.01
 drwxr-xr-x 24 yjhong yjhong 4096  2월 22 17:23 u-boot-2021.01+gitAUTOINC+3983bffabc-g3983bffabc/
 
 yjhong@ubuntu18:~/kisan/TI_AM6231/u-boot/trunk/u-boot-2021.01$ export TI_SECURE_DEV_PKG=/home/yjhong/kisan/TI_AM6231/u-boot/trunk/core-secdev-k3
+```
 
 
-
-
+```cpp
 yjhong@ubuntu18:~/kisan/TI_AM6231/u-boot/trunk/u-boot-2021.01$ make mrproper
   CLEAN   scripts/basic
   CLEAN   scripts/kconfig
   CLEAN   .config
+```
 
-
+```cpp
 UBOOT_ATF=${TI_SDK_PATH}/board-support/prebuilt-images/bl31.bin
 UBOOT_TEE=${TI_SDK_PATH}/board-support/prebuilt-images/bl32.bin
 UBOOT_SYSFW=${TI_SDK_PATH}/board-support/prebuilt-images/sysfw.bin
 UBOOT_DMFW=${TI_SDK_PATH}/board-support/prebuilt-images/ipc_echo_testb_mcu1_0_release_strip.xer5f
+```
 
+```cpp
 yjhong@ubuntu18:~/kisan/TI_AM6231/u-boot/trunk/u-boot-2021.01$ make -j2 CROSS_COMPILE=/home/yjhong/kisan/TI_AM6231/toolchain/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu- ATF=${UBOOT_ATF} TEE=${UBOOT_TEE} DM=${UBOOT_DMFW} O=am62x_evm am62x_evm_a53_defconfig all
 make[1]: 디렉터리 '/home/yjhong/kisan/TI_AM6231/u-boot/ti_am6231_u-boot/u-boot-2021.01+gitAUTOINC+3983bffabc-g3983bffabc/am62x_evm' 들어감
   GEN     ./Makefile
@@ -282,6 +301,8 @@ Configuration 0 (k3-am625-sk.dtb)
   COPY    u-boot.dtb
   MKIMAGE u-boot-dtb.img
 make[1]: 디렉터리 '/home/yjhong/kisan/TI_AM6231/u-boot/ti_am6231_u-boot/u-boot-2021.01+gitAUTOINC+3983bffabc-g3983bffabc/am62x_evm' 나감
+```
+
 
 
 

@@ -40,7 +40,7 @@ sudo apt-get install build-essential autoconf automake bison flex libssl-dev bc 
 SDK 설치 경로의 Makefile 과 Rules.make 파일을 참조하여 작성
 
 
-```cpp
+```bash
 #!/bin/bash
 
 PATH_UBT=/home/yjhong/kisan/TI_AM6231/u-boot/trunk/u-boot-2021.01
@@ -133,7 +133,7 @@ echo "### End AM6231 Auto Maing Script ###"
 ## SD 카드 부팅 체크
 
 
-```cpp
+```bash
 U-Boot SPL 2021.01 (Feb 23 2023 - 13:18:40 +0900)
 SYSFW ABI: 3.1 (firmware rev 0x0008 '8.5.3--v08.05.03 (Chill Capybar')
 SPL initial stack usage: 13424 bytes

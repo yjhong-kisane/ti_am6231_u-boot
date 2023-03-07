@@ -17,6 +17,18 @@ https://e2e.ti.com/support/processors-group/processors/f/processors-forum/118404
 https://software-dl.ti.com/processor-sdk-linux/esd/AM64X/08_05_00_21/exports/docs/linux/Foundational_Components_Migration_Guide.html#k3-image-gen
 
 
+"K3" Generation 이란 Texas Instrument’s K3 family of SoCs 을 의미.
+
+https://u-boot.readthedocs.io/en/stable/board/ti/k3.html
+
+
+"HS" platform 에서 HS 는 High Security 를 의미.
+
+https://e2e.ti.com/support/processors-group/processors/f/processors-forum/1092354/tda4vm-what-is-the-difference-between-gp-and-hs-in-hardware
+
+https://www.ti.com/lit/an/sprad04/sprad04.pdf?ts=1677060647496
+
+
 
 ## 의존성 패키지 설치
 

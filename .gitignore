@@ -15,3 +15,14 @@ k3-image-gen-2022.01/out/soc/am62x/evm/combined-dm-cfg.bin
 k3-image-gen-2022.01/out/soc/am62x/evm/board-cfg.o.log
 k3-image-gen-2022.01/out/soc/am62x/evm/board-cfg.o-pre-validated
 k3-image-gen-2022.01/out/soc/am62x/evm/board-cfg.bin
+u-boot-2021.01+gitAUTOINC+3983bffabc-g3983bffabc/u-boot.cfg.tmp
+u-boot-2021.01+gitAUTOINC+3983bffabc-g3983bffabc/scripts/kconfig/zconf.tab.o
+u-boot-2021.01+gitAUTOINC+3983bffabc-g3983bffabc/scripts/kconfig/zconf.tab.c
+u-boot-2021.01+gitAUTOINC+3983bffabc-g3983bffabc/scripts/kconfig/zconf.lex.c
+u-boot-2021.01+gitAUTOINC+3983bffabc-g3983bffabc/scripts/kconfig/conf.o
+u-boot-2021.01+gitAUTOINC+3983bffabc-g3983bffabc/scripts/kconfig/.zconf.tab.o.cmd
+u-boot-2021.01+gitAUTOINC+3983bffabc-g3983bffabc/scripts/kconfig/.zconf.tab.c.cmd
+u-boot-2021.01+gitAUTOINC+3983bffabc-g3983bffabc/scripts/kconfig/.zconf.lex.c.cmd
+u-boot-2021.01+gitAUTOINC+3983bffabc-g3983bffabc/scripts/kconfig/.conf.o.cmd
+u-boot-2021.01+gitAUTOINC+3983bffabc-g3983bffabc/scripts/kconfig/.conf.cmd
+u-boot-2021.01+gitAUTOINC+3983bffabc-g3983bffabc/scripts/basic/.fixdep.cmd

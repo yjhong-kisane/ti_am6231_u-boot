@@ -251,6 +251,8 @@ static int abortboot_single_key(int bootdelay)
 	int abort = 0;
 	unsigned long ts;
 
+	printf("[%s:%s:%d] TRACE:\n", __FILE__, __FUNCTION__, __LINE__);
+
 	printf("Hit any key to stop autoboot: %2d ", bootdelay);
 
 	/*
@@ -351,6 +353,8 @@ const char *bootdelay_process(void)
 		s = env_get("altbootcmd");
 	else
 		s = env_get("bootcmd");
+
+	printf("[%s:%s:%d] bootcmd: [%s]\n", __FILE__, __FUNCTION__, __LINE__, s);
 
 	if (IS_ENABLED(CONFIG_OF_CONTROL))
 		process_fdt_options(gd->fdt_blob);

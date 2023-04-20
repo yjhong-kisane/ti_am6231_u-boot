@@ -15,6 +15,8 @@ case. The domain-specific configuration artifacts to be tailored are:
 * *pm-cfg.c* contains the power management / clock related configuration
 * *rm-cfg.c* contains the resource management / allocation related configuration
 * *sec-cfg.c* contains the security configuration
+* *tifs-rm-cfg.c* contains stripped down version of resource management related
+configuration
 
 These files exist under {srcroot}/soc/{soc}/{configuration}/ folders, Where:
 * srcroot - Is the root folder of source code
@@ -143,7 +145,7 @@ configuration data exactly as in the non-HS version above.
 
 Important Notes
 ---------------
-There is a strong dependency of the used System Firmware release version and
+* There is a strong dependency of the used System Firmware release version and
 how the board configuration data needs to be structured and/or filled in. Using
 config data that is not compatible with a given SYSFW release may lead to
 failures during loading of the data by U-Boot SPL, or failures later downstream
@@ -154,6 +156,9 @@ great detail(!) to make sure suitable board configuration is provided. Common
 pitfalls preventing proper system operation include but are not limited to using
 an unsuitable or invalid resource management configuration.
 
+* J784S4 uses split resource management configuration for TIFS (tifs-rm-cfg.c) and
+DM (rm-cfg.c). tifs-rm-cfg.c is a stripped down version of rm-cfg.c containing
+entries only for TIFS consumption.
 
 References
 ----------

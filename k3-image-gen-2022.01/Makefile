@@ -85,7 +85,7 @@ endif
 SYSFW_HS_CERTS_PATH ?= ti-$(SCIFS)-firmware-$(SOC)-$(SOC_TYPE)-certs.bin
 
 # Must use FULL Git hash below, as it is used as part of an URL for direct DL
-SYSFW_GIT_HASH ?= 17cc30de6c1ce7ab6010f2391986241f3bffd8cb
+SYSFW_GIT_HASH ?= 340194800a581baf976360386dfc7b5acab8d948
 
 # URL to download SYSFW release binary from if not provided otherwise
 SYSFW_DL_URL ?= https://git.ti.com/processor-firmware/ti-linux-firmware/blobs/raw/$(SYSFW_GIT_HASH)/ti-sysfw/$(SYSFW_PATH)
@@ -162,7 +162,7 @@ endif
 
 .PHONY: all
 ifeq (,$(SBL))
-ifeq ($(BASE_SOC),$(findstring $(BASE_SOC),("am62x" "j784s4")))
+ifeq ($(BASE_SOC),$(findstring $(BASE_SOC),("am62x" "j784s4" "am62ax")))
 all: ; $(error "Cannot build non-combined boot image for $(BASE_SOC), define SBL image")
 else
 all: sysfw.itb
@@ -212,8 +212,9 @@ $(ITS): | _objtree_build
 $(ITB): $(ITS) $(SOC_BINS) | _bindir_build
 	$(MKIMAGE) -f $< -r $@
 
+.PHONY: sysfw.itb
 sysfw.itb: $(ITB)
-	@ln -sf $< $@
+	@ln -sf $< $(BIN_DIR)/$@
 
 $(COMBINED_SYSFW_BRDCFG): $(soc_objroot)/board-cfg.bin $(soc_objroot)/sec-cfg.bin $(soc_objroot)/pm-cfg.bin $(soc_objroot)/rm-cfg.bin
 	python3 ./scripts/sysfw_boardcfg_blob_creator.py -b $(soc_objroot)/board-cfg.bin -s $(soc_objroot)/sec-cfg.bin -p $(soc_objroot)/pm-cfg.bin -r $(soc_objroot)/rm-cfg.bin -o $@
@@ -237,8 +238,9 @@ $(TIBOOT3): $(SBL) $(SYSFW_PATH) $(SYSFW_HS_INNER_CERT_PATH) $(COMBINED_TIFS_BRD
 	./scripts/gen_x509_combined_cert.sh -b $(SBL) -l $(SBL_LOADADDDR) -s $(SYSFW_PATH) -m $(LOADADDR) -c "$(SYSFW_HS_INNER_CERT_PATH)" -d $(COMBINED_TIFS_BRDCFG) -n $(COMBINED_TIFS_BRDCFG_LOADADDR) -t $(COMBINED_DM_BRDCFG) -y $(COMBINED_DM_BRDCFG_LOADADDR) -k $(KEY) -r $(SW_REV) -o $@
 endif
 
+.PHONY: tiboot3.bin
 tiboot3.bin: $(TIBOOT3)
-	@ln -sf $< $@
+	@ln -sf $< $(BIN_DIR)/$@
 
 $(soc_objroot)/%.o: %.c | _objtree_build
 	$(CROSS_COMPILE)gcc $(CFLAGS) -c -o $@-pre-validated $<
@@ -258,9 +260,9 @@ sysfw_version: $(SYSFW_PATH)
 clean:
 	-rm -f $(SOC_BINS) $(SOC_PVAL) $(SOC_LOGS)
 	-rm -f $(COMBINED_SYSFW_BRDCFG) $(COMBINED_TIFS_BRDCFG) $(COMBINED_DM_BRDCFG)
-	-rm -f $(ITB) sysfw.itb
+	-rm -f $(ITB) $(BIN_DIR)/sysfw.itb
 	-rm -f $(ITS)
-	-rm -f $(TIBOOT3) tiboot3.bin
+	-rm -f $(TIBOOT3) $(BIN_DIR)/tiboot3.bin
 	-rm -f $(SYSFW_HS_CERTS_PATH)
 	-rm -df $(BIN_DIR)
 	-rm -df $(O)/soc/$(BASE_SOC)/$(CONFIG) && \

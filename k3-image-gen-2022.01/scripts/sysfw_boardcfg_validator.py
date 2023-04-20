@@ -542,6 +542,7 @@ class sysfw_trace_cli:
             choices={'am65x',
                      'am64x',
                      'am62x',
+                     'am62ax',
                      'j721e',
                      'j7200',
                      'j721s2',

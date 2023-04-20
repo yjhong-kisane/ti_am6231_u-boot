@@ -35,10 +35,11 @@
 
 # Variables
 VALID_SHAS="sha256 sha384 sha512 sha224"
-OUTPUT=x509-firmware.bin
-TEMP_X509=x509-temp.cert
-CERT=certificate.bin
-RAND_KEY=eckey.pem
+BUILD_DIR=${O:- .}
+OUTPUT=$BUILD_DIR/x509-firmware.bin
+TEMP_X509=$BUILD_DIR/x509-temp.cert
+CERT=$BUILD_DIR/certificate.bin
+RAND_KEY=$BUILD_DIR/eckey.pem
 VALID_ROM_CORES="r5 m3"
 VALID_DMSC_CORES="r5-00 r5-01 a53-00 a53-01 a53-10 a53-11"
 SHA=sha512

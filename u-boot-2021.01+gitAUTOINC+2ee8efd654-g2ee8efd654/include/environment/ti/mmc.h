@@ -12,10 +12,13 @@
 	"mmcdev=0\0" \
 	"mmcrootfstype=ext4 rootwait\0" \
 	"finduuid=part uuid ${boot} ${bootpart} uuid\0" \
-	"args_mmc=run finduuid;setenv bootargs console=${console} " \
+	"args_mmc=run finduuid; setenv bootargs console=${console} " \
+		"consoleblank=0 " \
 		"${optargs} " \
-		"root=PARTUUID=${uuid} rw " \
-		"rootfstype=${mmcrootfstype}\0" \
+		"root=/dev/mmcblk1p2 rw " \
+		"rootfstype=${mmcrootfstype} " \
+		"loglevel=8 " \
+		"mem=952M\0" \
 	"loadbootscript=load mmc ${mmcdev} ${loadaddr} boot.scr\0" \
 	"bootscript=echo Running bootscript from mmc${mmcdev} ...; " \
 		"source ${loadaddr}\0" \

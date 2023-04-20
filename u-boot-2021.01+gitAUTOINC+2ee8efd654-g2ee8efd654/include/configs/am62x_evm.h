@@ -138,7 +138,7 @@
 #define EXTRA_ENV_AM625_BOARD_SETTINGS_MMC				\
 	"boot=mmc\0"							\
 	"mmcdev=1\0"							\
-	"bootpart=1:2\0"						\
+	"bootpart=1:1\0"						\
 	"bootdir=/boot\0"						\
 	"rd_spec=-\0"							\
 	"init_mmc=run args_all args_mmc\0"				\

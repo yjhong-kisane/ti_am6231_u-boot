@@ -17,6 +17,9 @@
 #include <asm/arch/sys_proto.h>
 #include <env.h>
 
+#include <asm/gpio.h>		// gpio_request
+#include <linux/delay.h>	// udelay
+
 #include "../common/board_detect.h"
 
 #define board_is_am62x_skevm()		board_ti_k3_is("AM62-SKEVM")
@@ -24,8 +27,40 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+static void reset_phy_lan8710(int nGpioNum)
+{
+	u32 ret = gpio_request(nGpioNum, "Reset_LAN8710");
+	if (ret < 0) {
+		printf("Unable to request GPIO %d for LAN8710\n", nGpioNum);
+	}
+	ret = gpio_direction_output(nGpioNum, 1);	// Output, HI
+	if (ret < 0) {
+		printf("Unable to config GPIO %d for LAN8710\n", nGpioNum);
+	}
+
+	mdelay(15);
+
+	// Set 0 to output
+	printf("Setting GPIO %d to 0 for LAN8710\n", nGpioNum);
+	ret = gpio_set_value(nGpioNum, 0);
+	if (ret < 0) {
+		printf("Unable to clear GPIO %d for LAN8710\n", nGpioNum);
+	}
+
+	mdelay(10);
+
+	// Set 1 to output
+	printf("Setting GPIO %d to 1 for LAN8710\n", nGpioNum);
+	ret = gpio_set_value(nGpioNum, 1);
+	if (ret < 0) {
+		printf("Unable to set GPIO %d for LAN8710\n", nGpioNum);
+	}
+}
+
 int board_init(void)
 {
+	printf("TI SDK Ver: %s\n", TI_SDK_VER);
+	printf("[%s:%s:%d] TRACE:**********\n", __FILE__, __FUNCTION__, __LINE__);
 	return 0;
 }
 
@@ -185,6 +220,13 @@ static void setup_serial(void)
 #ifdef CONFIG_BOARD_LATE_INIT
 int board_late_init(void)
 {
+	printf("[%s:%s:%d] TRACE:**********\n", __FILE__, __FUNCTION__, __LINE__);
+
+	
+	//reset_phy_lan8710(68);	// (B24) GPIO0_68 (AM6232_PRU_STATUS -> LAN8710_RESET)
+	reset_phy_lan8710(91);	// (B24) GPIO0_68 (AM6232_PRU_STATUS -> LAN8710_RESET)
+
+
 	if (IS_ENABLED(CONFIG_TI_I2C_BOARD_DETECT)) {
 		struct ti_am6_eeprom *ep = TI_AM6_EEPROM_DATA;
 
@@ -211,11 +253,55 @@ int board_late_init(void)
 #define CTRLMMR_USB1_PHY_CTRL	0x43004018
 #define CORE_VOLTAGE		0x80000000
 
+
+
+static void gpio_set_out_hi(int nGpioNum)
+{
+	// GPIO # as output
+	u32 ret = gpio_request(nGpioNum, "");
+	if (ret < 0) {
+		printf("Unable to request GPIO %d\n", nGpioNum);
+	}
+	ret = gpio_direction_output(nGpioNum, 0);
+	if (ret < 0) {
+		printf("Unable to config GPIO %d\n", nGpioNum);
+	}
+
+	udelay(100);
+
+	// Set 1 to output
+	printf("Setting GPIO %d to 1\n", nGpioNum);
+	ret = gpio_set_value(nGpioNum, 1);
+	if (ret < 0) {
+		printf("Unable to set GPIO %d\n", nGpioNum);
+	}
+
+	udelay(100);
+
+	// Set 0 to output
+	printf("Setting GPIO %d to 0\n", nGpioNum);
+	ret = gpio_set_value(nGpioNum, 0);
+	if (ret < 0) {
+		printf("Unable to clear GPIO %d\n", nGpioNum);
+	}
+}
+
+
+
+
+
 #ifdef CONFIG_SPL_BOARD_INIT
 void spl_board_init(void)
 {
 	u32 val;
 
+	printf("TI SDK Ver: %s\n", TI_SDK_VER);
+	printf("[%s:%s:%d] TRACE:**********\n", __FILE__, __FUNCTION__, __LINE__);
+
+	gpio_set_out_hi(11);	// (F23) GPIO0_11 (AM6232_STATUS_LED1)
+	gpio_set_out_hi(13);	// (H21) GPIO0_13 (AM6232_STATUS_LED3)
+	gpio_set_out_hi(14);	// (E24) GPIO0_14 (AM6232_STATUS_LED2)
+	
 	/* Set USB0 PHY core voltage to 0.85V */
 	val = readl(CTRLMMR_USB0_PHY_CTRL);
 	val &= ~(CORE_VOLTAGE);

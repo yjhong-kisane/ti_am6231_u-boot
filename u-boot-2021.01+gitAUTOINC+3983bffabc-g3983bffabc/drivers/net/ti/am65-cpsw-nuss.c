@@ -229,6 +229,8 @@ out:
 
 #define AM65_GMII_SEL_RGMII_IDMODE	BIT(4)
 
+
+
 static void am65_cpsw_gmii_sel_k3(struct am65_cpsw_priv *priv,
 				  phy_interface_t phy_mode, int slave)
 {
@@ -241,19 +243,24 @@ static void am65_cpsw_gmii_sel_k3(struct am65_cpsw_priv *priv,
 
 	dev_dbg(common->dev, "old gmii_sel: %08x\n", reg);
 
+	printf("\n[%s:%s:%d] TRACE:********** phy_mode: %d ", __FILE__, __FUNCTION__, __LINE__, phy_mode);
+
 	switch (phy_mode) {
 	case PHY_INTERFACE_MODE_RMII:
 		mode = AM65_GMII_SEL_MODE_RMII;
+		printf("(AM65_GMII_SEL_MODE_RMII)\n");
 		break;
 
 	case PHY_INTERFACE_MODE_RGMII:
 	case PHY_INTERFACE_MODE_RGMII_RXID:
 		mode = AM65_GMII_SEL_MODE_RGMII;
+		printf("(AM65_GMII_SEL_MODE_RGMII)\n");
 		break;
 
 	case PHY_INTERFACE_MODE_RGMII_ID:
 	case PHY_INTERFACE_MODE_RGMII_TXID:
 		mode = AM65_GMII_SEL_MODE_RGMII;
+		printf("(AM65_GMII_SEL_MODE_RGMII)\n");
 		rgmii_id = true;
 		break;
 
@@ -262,8 +269,12 @@ static void am65_cpsw_gmii_sel_k3(struct am65_cpsw_priv *priv,
 			 "Unsupported PHY mode: %u. Defaulting to MII.\n",
 			 phy_mode);
 		/* fallthrough */
+
+		printf("Unsupported PHY mode: %u. Defaulting to MII.\n", phy_mode);
+
 	case PHY_INTERFACE_MODE_MII:
 		mode = AM65_GMII_SEL_MODE_MII;
+		printf("(AM65_GMII_SEL_MODE_MII)\n");
 		break;
 	};
 
@@ -632,6 +643,9 @@ static int am65_cpsw_ofdata_parse_phy(struct udevice *dev)
 		if (pdata->phy_interface == -1) {
 			dev_err(dev, "Invalid PHY mode '%s', port %u\n",
 				phy_mode, priv->port_id);
+			
+			printf("\n[%s:%s:%d] Invalid PHY mode '%s', port %u\n", __FILE__, __FUNCTION__, __LINE__, phy_mode, priv->port_id);
+
 			ret = -EINVAL;
 			goto out;
 		}
@@ -681,6 +695,8 @@ static int am65_cpsw_port_probe(struct udevice *dev)
 
 	sprintf(portname, "%s%s", dev->parent->name, dev->name);
 	device_set_name(dev, portname);
+
+	printf("\n[%s:%s:%d] TRACE:********** portname: %s ", __FILE__, __FUNCTION__, __LINE__, portname);
 
 	priv->mdio_manual_mode = false;
 	if (soc_device_match(k3_mdio_soc_data))

@@ -430,6 +430,8 @@ struct mii_dev *cpsw_mdio_init(const char *name, phys_addr_t mdio_base,
 		goto free_bus;
 	}
 
+	printf("[%s:%s:%d] TRACE:**********\n", __FILE__, __FUNCTION__, __LINE__);
+
 	return cpsw_mdio->bus;
 
 free_bus:

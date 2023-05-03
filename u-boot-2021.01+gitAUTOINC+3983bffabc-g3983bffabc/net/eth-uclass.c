@@ -407,12 +407,158 @@ int eth_rx(void)
 	return ret;
 }
 
+
+
+
+#include <asm/io.h>	// readl
+
+
+
+
+
+
+
+
+
+
 int eth_initialize(void)
 {
 	int num_devices = 0;
 	struct udevice *dev;
+	
+
+	uint32_t ctrl_val = 0;
+
+
+	printf("\n");
+	printf("[%s:%s:%d] TRACE:********** START\n", __FILE__, __FUNCTION__, __LINE__);
+	printf("[%s:%s:%d] TRACE:********** START\n", __FILE__, __FUNCTION__, __LINE__);
+	printf("[%s:%s:%d] TRACE:********** START\n", __FILE__, __FUNCTION__, __LINE__);
+
+
+
+#if defined(CONFIG_MII)
+	printf("[%s:%s:%d] CONFIG_MII\n", __FILE__, __FUNCTION__, __LINE__);
+#endif
+
+#if defined(CONFIG_CMD_MII) // V
+	printf("[%s:%s:%d] CONFIG_CMD_MII\n", __FILE__, __FUNCTION__, __LINE__);
+#endif
+
+#if defined(CONFIG_PHYLIB)	// V
+	printf("[%s:%s:%d] CONFIG_PHYLIB\n", __FILE__, __FUNCTION__, __LINE__);
+#endif
+
+
+	// TRM. 2568
+	// CTRL_ENET1_CTRL : ENET1_CTRL_PORT_MODE_SEL
+	ctrl_val = readl(0x104044);
+	printf("[%s:%s:%d] CTRL_ENET1_CTRL : 0x%2x\n", __FILE__, __FUNCTION__, __LINE__, ctrl_val);
+	if(ctrl_val != 0x01)
+	{
+		writel(0x1, 0x104044);	// 001=RMII(0x01), 010=RGMII(0x02)
+		printf("[%s:%s:%d] CTRL_ENET1_CTRL >>0x%2x\n", __FILE__, __FUNCTION__, __LINE__, readl(0x104044));
+	}
+
+	// TRM. 2569
+	// CTRL_ENET2_CTRL : ENET2_CTRL_PORT_MODE_SEL
+	ctrl_val = readl(0x104048);
+	printf("[%s:%s:%d] CTRL_ENET2_CTRL : 0x%2x\n", __FILE__, __FUNCTION__, __LINE__, ctrl_val);
+	if(ctrl_val != 0x01)
+	{
+		writel(0x1, 0x104048);	// 001=RMII(0x01), 010=RGMII(0x02)
+		printf("[%s:%s:%d] CTRL_ENET2_CTRL >>0x%2x\n", __FILE__, __FUNCTION__, __LINE__, readl(0x104048));
+	}
+
+#if 0
+	// TRM.2394 에 따르면
+	// CPSW0 50-Mhz Ref. Clock을 위해 MAIN_PLL2_HSDIV1_CLKOUT/5 -> RGMII_MHZ_50_CLK ??
+
+	// TRM.2648 (CTRL_CLKOUT_CTRL)
+	ctrl_val = readl(0x00108010);
+	printf("[%s:%s:%d] CTRL_CLKOUT_CTRL : 0x%2x\n", __FILE__, __FUNCTION__, __LINE__, ctrl_val);
+	if(ctrl_val != 0x00)
+	{
+		writel(0x0, 0x00108010);
+		// 1'b0 - MAIN_PLL2_HSDIV1_CLKOUT / 5
+		// 1'b1 - MAIN_PLL2_HSDIV1_CLKOUT / 10
+		printf("[%s:%s:%d] CTRL_CLKOUT_CTRL >>0x%2x\n", __FILE__, __FUNCTION__, __LINE__, readl(0x00108010));
+	}
+
+	// TRM.2745 (CTRL_CLKOUT_CTRL_PROXY)
+	ctrl_val = readl(0x0010a010);
+	printf("[%s:%s:%d] CTRL_CLKOUT_CTRL_PROXY : 0x%2x\n", __FILE__, __FUNCTION__, __LINE__, ctrl_val);
+	if(ctrl_val != 0x00)
+	{
+		writel(0x0, 0x0010a010);
+		// 1'b0 - MAIN_PLL2_HSDIV1_CLKOUT / 5
+		// 1'b1 - MAIN_PLL2_HSDIV1_CLKOUT / 10
+		printf("[%s:%s:%d] CTRL_CLKOUT_CTRL_PROXY >>0x%2x\n", __FILE__, __FUNCTION__, __LINE__, readl(0x0010a010));
+	}
+
+
+	// TRM. 2607
+	// CTRL_ENET1_CTRL_PROXY : ENET1_CTRL_PORT_MODE_SEL_PROXY
+	ctrl_val = readl(0x106044);
+	printf("[%s:%s:%d] CTRL_ENET1_CTRL_PROXY : 0x%2x\n", __FILE__, __FUNCTION__, __LINE__, ctrl_val);
+	writel(0x1, 0x106044);	// 001=RMII(0x01), 010=RGMII(0x02)
+
+	// TRM. 2608
+	// CTRL_ENET2_CTRL_PROXY : ENET2_CTRL_PORT_MODE_SEL_PROXY
+	ctrl_val = readl(0x106048);
+	printf("[%s:%s:%d] CTRL_ENET2_CTRL_PROXY : 0x%2x\n", __FILE__, __FUNCTION__, __LINE__, ctrl_val);
+	writel(0x1, 0x106048);	// 001=RMII(0x01), 010=RGMII(0x02)
+
+	// TRM.2657 (CTRL_CPSW_CLKSEL = 0x7 = 0111)
+	ctrl_val = readl(0x108140);
+	printf("[%s:%s:%d] CTRL_CPSW_CLKSEL : 0x%2x\n", __FILE__, __FUNCTION__, __LINE__, ctrl_val);
+	/*	
+	b000 - MAIN_PLL2_HSDIV5_CLKOUT
+	b001 - MAIN_PLL0_HSDIV6_CLKOUT
+	b010 - CP_GEMAC_CPTS0_RFT_CLK
+	b011 - Reserved
+	b100 - MCU_EXT_REFCLK0
+	b101 - EXT_REFCLK1
+	b110 - MCU_SYSCLK0
+	b111 - MAIN_SYSCLK0
+	*/
+
+	// TRM.2754 (CTRL_CPSW_CLKSEL_PROXY)
+	ctrl_val = readl(0x10A140);
+	printf("[%s:%s:%d] CTRL_CPSW_CLKSEL_PROXY : 0x%2x\n", __FILE__, __FUNCTION__, __LINE__, ctrl_val);
+
+
+	// TRM. 9154 (CPSW0_CONFIG_REG = 0x70203 = 0111_0000_0010_0000_0011)
+	ctrl_val = readl(0x08000020);
+	printf("[%s:%s:%d] CPSW0_CONFIG_REG : 0x%2x\n", __FILE__, __FUNCTION__, __LINE__, ctrl_val);
+	
+	// TRM. 9155 (CPSW0_STATUS_REG)
+	ctrl_val = readl(0x08000030);
+	printf("[%s:%s:%d] CPSW0_STATUS_REG : 0x%2x\n", __FILE__, __FUNCTION__, __LINE__, ctrl_val);
+
+	// TRM. 9208 (CPSW_CPPI_CLK)
+	ctrl_val = readl(0x0802005c);
+	printf("[%s:%s:%d] CPSW_CPPI_CLK : 0x%2x\n", __FILE__, __FUNCTION__, __LINE__, ctrl_val);
+	if(ctrl_val != 0x00)
+	{
+		writel(0x0, 0x0802005c);
+		// 1'b0 - MAIN_PLL2_HSDIV1_CLKOUT / 5
+		// 1'b1 - MAIN_PLL2_HSDIV1_CLKOUT / 10
+		printf("[%s:%s:%d] CPSW_CPPI_CLK >>0x%2x\n", __FILE__, __FUNCTION__, __LINE__, readl(0x0802005c));
+	}
+	
+	// TRM.9158 (CPSW0_RESET_REG)
+	ctrl_val = readl(0x08000104);
+	printf("[%s:%s:%d] CPSW0_RESET_REG : 0x%2x\n", __FILE__, __FUNCTION__, __LINE__, ctrl_val);
+	printf("[%s:%s:%d] CPSW0_RESET_REG >>SOFT_RESET\n", __FILE__, __FUNCTION__, __LINE__);
+	writel(0x1, 0x08000104);
+
+#endif
+
 
 	eth_common_init();
+
+
 
 	/*
 	 * Devices need to write the hwaddr even if not started so that Linux
@@ -460,6 +606,10 @@ int eth_initialize(void)
 			log_err("No ethernet found.\n");
 		putc('\n');
 	}
+
+	printf("[%s:%s:%d] TRACE:********** END\n", __FILE__, __FUNCTION__, __LINE__);
+	printf("[%s:%s:%d] TRACE:********** END\n", __FILE__, __FUNCTION__, __LINE__);
+	printf("[%s:%s:%d] TRACE:********** END\n", __FILE__, __FUNCTION__, __LINE__);
 
 	return num_devices;
 }

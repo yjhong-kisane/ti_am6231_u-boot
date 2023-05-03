@@ -1121,6 +1121,8 @@ static void cpsw_gmii_sel_dra7xx(struct cpsw_priv *priv,
 	u32 mode = 0;
 	int slave = priv->data->active_slave;
 
+	printf("[%s:%s:%d] TRACE:**********\n", __FILE__, __FUNCTION__, __LINE__);
+
 	reg = readl(priv->data->gmii_sel);
 
 	switch (phy_mode) {
@@ -1166,6 +1168,12 @@ static void cpsw_gmii_sel_dra7xx(struct cpsw_priv *priv,
 static void cpsw_phy_sel(struct cpsw_priv *priv, const char *compat,
 			 phy_interface_t phy_mode)
 {
+	printf("[%s:%s:%d] TRACE:**********\n", __FILE__, __FUNCTION__, __LINE__);
+	printf("[%s:%s:%d] TRACE:**********\n", __FILE__, __FUNCTION__, __LINE__);
+	printf("[%s:%s:%d] TRACE:**********\n", __FILE__, __FUNCTION__, __LINE__);
+	printf("[%s:%s:%d] TRACE:**********\n", __FILE__, __FUNCTION__, __LINE__);
+	printf("[%s:%s:%d] TRACE:**********\n", __FILE__, __FUNCTION__, __LINE__);
+
 	if (!strcmp(compat, "ti,am3352-cpsw-phy-sel"))
 		cpsw_gmii_sel_am3352(priv, phy_mode);
 	if (!strcmp(compat, "ti,am43xx-cpsw-phy-sel"))
@@ -1179,6 +1187,10 @@ static int cpsw_eth_probe(struct udevice *dev)
 	struct cpsw_priv *priv = dev_get_priv(dev);
 	struct eth_pdata *pdata = dev_get_platdata(dev);
 
+	printf("[%s:%s:%d] TRACE:**********\n", __FILE__, __FUNCTION__, __LINE__);
+	printf("[%s:%s:%d] TRACE:**********\n", __FILE__, __FUNCTION__, __LINE__);
+	printf("[%s:%s:%d] TRACE:**********\n", __FILE__, __FUNCTION__, __LINE__);
+	
 	priv->dev = dev;
 	priv->data = pdata->priv_pdata;
 	ti_cm_get_macid(dev, priv->data, pdata->enetaddr);

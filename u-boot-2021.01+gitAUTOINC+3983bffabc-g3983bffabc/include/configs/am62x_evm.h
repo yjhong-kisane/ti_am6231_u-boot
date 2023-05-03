@@ -427,4 +427,6 @@
 #endif
 #define CONFIG_SYS_MALLOC_LEN           SZ_128M
 
+#define TI_SDK_VER "08.05.00.21"
+
 #endif /* __CONFIG_AM625_EVM_H */

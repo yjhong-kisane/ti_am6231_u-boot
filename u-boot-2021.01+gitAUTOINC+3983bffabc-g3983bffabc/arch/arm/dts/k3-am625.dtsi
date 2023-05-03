@@ -25,7 +25,7 @@
 				core1 {
 					cpu = <&cpu1>;
 				};
-
+				/*
 				core2 {
 					cpu = <&cpu2>;
 				};
@@ -33,6 +33,7 @@
 				core3 {
 					cpu = <&cpu3>;
 				};
+				*/
 			};
 		};
 
@@ -64,6 +65,7 @@
 			next-level-cache = <&L2_0>;
 		};
 
+		/*
 		cpu2: cpu@2 {
 			compatible = "arm,cortex-a53";
 			reg = <0x002>;
@@ -91,6 +93,7 @@
 			d-cache-sets = <128>;
 			next-level-cache = <&L2_0>;
 		};
+		*/
 	};
 
 	L2_0: l2-cache0 {

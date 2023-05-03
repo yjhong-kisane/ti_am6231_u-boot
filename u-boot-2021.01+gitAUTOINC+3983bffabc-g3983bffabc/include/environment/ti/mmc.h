@@ -17,8 +17,7 @@
 		"${optargs} " \
 		"root=/dev/mmcblk1p2 rw " \
 		"rootfstype=${mmcrootfstype} " \
-		"loglevel=8 " \
-		"mem=952M\0" \
+		"loglevel=8\0" \
 	"loadbootscript=load mmc ${mmcdev} ${loadaddr} boot.scr\0" \
 	"bootscript=echo Running bootscript from mmc${mmcdev} ...; " \
 		"source ${loadaddr}\0" \

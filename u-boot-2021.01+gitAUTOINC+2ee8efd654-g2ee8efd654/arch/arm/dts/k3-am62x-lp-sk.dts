@@ -14,6 +14,7 @@
 	model = "Texas Instruments AM62x LP SK";
 };
 
+/*
 &main_i2c1 {
 	exp1: gpio@22 {
 		gpio-line-names = "GPIO_CPSW2_RST", "GPIO_CPSW1_RST",
@@ -87,3 +88,4 @@
 		};
 	};
 };
+*/

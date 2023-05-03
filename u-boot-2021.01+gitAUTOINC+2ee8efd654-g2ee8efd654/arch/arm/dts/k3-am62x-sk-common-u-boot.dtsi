@@ -169,9 +169,11 @@
 	u-boot,dm-spl;
 };
 
+/*
 &ospi0_pins_default {
 	u-boot,dm-spl;
 };
+*/
 
 &cpsw_port1 {
 	u-boot,dm-spl;

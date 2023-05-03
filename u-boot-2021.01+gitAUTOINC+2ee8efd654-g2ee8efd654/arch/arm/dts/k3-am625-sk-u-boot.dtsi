@@ -14,6 +14,7 @@
 	u-boot,dm-spl;
 };
 
+/*
 &ospi0 {
 	u-boot,dm-spl;
 
@@ -29,8 +30,21 @@
 		};
 	};
 };
+*/
 
 &main_gpio0 {
+	u-boot,dm-spl;
+};
+
+&main_gpio1 {
+	u-boot,dm-spl;
+};
+
+&gpio0_pins_default {
+	u-boot,dm-spl;
+};
+
+&gpio1_pins_default {
 	u-boot,dm-spl;
 };
 
@@ -42,9 +56,11 @@
 	u-boot,dm-spl;
 };
 
+/*
 &exp1 {
 	u-boot,dm-spl;
 };
+*/
 
 &vmain_pd {
 	u-boot,dm-spl;

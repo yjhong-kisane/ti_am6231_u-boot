@@ -117,7 +117,7 @@
 		enable-active-high;
 		vin-supply = <&vcc_3v3_sys>;
 		//gpio = <&exp1 3 GPIO_ACTIVE_HIGH>;		// VPP_LDO_EN (TLV75518PDQNR) - AM62SK EVM
-		gpio = <&main_gpio0 32 GPIO_ACTIVE_HIGH>;	// VPP_1VP_EN (TLV75518PDBVR) - �Աݱ�
+		gpio = <&main_gpio0 32 GPIO_ACTIVE_HIGH>;	// VPP_1VP_EN (TLV75518PDBVR) - 입금기
 	};
 
 	vdd_sd_dv: regulator-4 {
@@ -133,7 +133,7 @@
 		regulator-boot-on;
 		vin-supply = <&vcc_5v0>;
 		//gpios = <&main_gpio0 31 GPIO_ACTIVE_HIGH>;	// VSEL_SD (TLV7103318QDSERQ1) - AM62SK EVM
-		gpios = <&main_gpio0 42 GPIO_ACTIVE_HIGH>;		// VSEL_SD/VSEL_DDR - �Աݱ�
+		gpios = <&main_gpio0 42 GPIO_ACTIVE_HIGH>;		// VSEL_SD/VSEL_DDR - 입금기
 		states = <1800000 0x0>,
 			 <3300000 0x1>;
 	};
@@ -191,30 +191,32 @@
 		>;
 	};
 
+	/*
 	main_mmc0_pins_default: main-mmc0-pins-default {
 		pinctrl-single,pins = <
-			AM62X_IOPAD(0x220, PIN_INPUT, 0) /* (Y3) MMC0_CMD */
-			AM62X_IOPAD(0x218, PIN_INPUT, 0) /* (AB1) MMC0_CLK */
-			AM62X_IOPAD(0x214, PIN_INPUT, 0) /* (AA2) MMC0_DAT0 */
-			AM62X_IOPAD(0x210, PIN_INPUT, 0) /* (AA1) MMC0_DAT1 */
-			AM62X_IOPAD(0x20c, PIN_INPUT, 0) /* (AA3) MMC0_DAT2 */
-			AM62X_IOPAD(0x208, PIN_INPUT, 0) /* (Y4) MMC0_DAT3 */
-			AM62X_IOPAD(0x204, PIN_INPUT, 0) /* (AB2) MMC0_DAT4 */
-			AM62X_IOPAD(0x200, PIN_INPUT, 0) /* (AC1) MMC0_DAT5 */
-			AM62X_IOPAD(0x1fc, PIN_INPUT, 0) /* (AD2) MMC0_DAT6 */
-			AM62X_IOPAD(0x1f8, PIN_INPUT, 0) /* (AC2) MMC0_DAT7 */
+			AM62X_IOPAD(0x220, PIN_INPUT, 0) // (Y3) MMC0_CMD
+			AM62X_IOPAD(0x218, PIN_INPUT, 0) // (AB1) MMC0_CLK
+			AM62X_IOPAD(0x214, PIN_INPUT, 0) // (AA2) MMC0_DAT0
+			AM62X_IOPAD(0x210, PIN_INPUT, 0) // (AA1) MMC0_DAT1
+			AM62X_IOPAD(0x20c, PIN_INPUT, 0) // (AA3) MMC0_DAT2
+			AM62X_IOPAD(0x208, PIN_INPUT, 0) // (Y4) MMC0_DAT3
+			AM62X_IOPAD(0x204, PIN_INPUT, 0) // (AB2) MMC0_DAT4
+			AM62X_IOPAD(0x200, PIN_INPUT, 0) // (AC1) MMC0_DAT5
+			AM62X_IOPAD(0x1fc, PIN_INPUT, 0) // (AD2) MMC0_DAT6
+			AM62X_IOPAD(0x1f8, PIN_INPUT, 0) // (AC2) MMC0_DAT7
 		>;
 	};
+	*/
 
 	main_mmc1_pins_default: main-mmc1-pins-default {
 		pinctrl-single,pins = <
-			AM62X_IOPAD(0x23c, PIN_INPUT, 0) /* (A21) MMC1_CMD */
-			AM62X_IOPAD(0x234, PIN_INPUT, 0) /* (B22) MMC1_CLK */
-			AM62X_IOPAD(0x230, PIN_INPUT, 0) /* (A22) MMC1_DAT0 */
-			AM62X_IOPAD(0x22c, PIN_INPUT, 0) /* (B21) MMC1_DAT1 */
-			AM62X_IOPAD(0x228, PIN_INPUT, 0) /* (C21) MMC1_DAT2 */
-			AM62X_IOPAD(0x224, PIN_INPUT, 0) /* (D22) MMC1_DAT3 */
-			AM62X_IOPAD(0x240, PIN_INPUT, 0) /* (D17) MMC1_SDCD */
+			AM62X_IOPAD(0x23c, PIN_INPUT, 0) // (A21) MMC1_CMD
+			AM62X_IOPAD(0x234, PIN_INPUT, 0) // (B22) MMC1_CLK
+			AM62X_IOPAD(0x230, PIN_INPUT, 0) // (A22) MMC1_DAT0
+			AM62X_IOPAD(0x22c, PIN_INPUT, 0) // (B21) MMC1_DAT1
+			AM62X_IOPAD(0x228, PIN_INPUT, 0) // (C21) MMC1_DAT2
+			AM62X_IOPAD(0x224, PIN_INPUT, 0) // (D22) MMC1_DAT3
+			AM62X_IOPAD(0x240, PIN_INPUT, 0) // (D17) MMC1_SDCD
 		>;
 	};
 
@@ -426,10 +428,13 @@
 };
 
 &sdhci0 {
+	status = "disabled";
+	/*
 	pinctrl-names = "default";
 	pinctrl-0 = <&main_mmc0_pins_default>;
 	ti,driver-strength-ohm = <50>;
 	disable-wp;
+	*/
 };
 
 &sdhci1 {
@@ -440,6 +445,7 @@
 	pinctrl-0 = <&main_mmc1_pins_default>;
 	ti,driver-strength-ohm = <50>;
 	disable-wp;
+	no-1-8-v;
 };
 
 &usbss0 {
@@ -447,7 +453,10 @@
 };
 
 &usb0 {
+	dr_mode = "host";
+	/*
 	extcon = <&extcon_usb0>;
+	*/
 };
 
 &usb1 {
@@ -464,14 +473,16 @@
 };
 
 &cpsw_port1 {
+	//TODO::DP83867 Gigabit PHY (CPSW RGMII) -> LAN8710A-EZK (RMII)
 	//phy-mode = "rgmii-rxid";
 	phy-handle = <&cpsw3g_phy0>;
 	phy-mode = "rmii";
 };
 
 &cpsw3g_mdio {
+	//TODO::DP83867 Gigabit PHY (CPSW RGMII) -> LAN8710A-EZK (RMII)
 	cpsw3g_phy0: ethernet-phy@0 {
-		reg = <0>;
+		reg = <1>;
 		/*
 		ti,rx-internal-delay = <DP83867_RGMIIDCTL_2_00_NS>;
 		ti,fifo-depth = <DP83867_PHYCR_FIFO_DEPTH_4_B_NIB>;

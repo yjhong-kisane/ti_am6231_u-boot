@@ -1,0 +1,12 @@
+#/bin/bash
+
+PATH_UBT=/home/yjhong/kisan/TI_AM62x/u-boot/trunk/u-boot-2021.01_sdk8.6
+TI_SDK_PATH=/home/yjhong/kisan/TI_AM62x/ti-processor-sdk-linux-am62xx-evm-08.06.00.42
+CC_ARMV8=${TI_SDK_PATH}/linux-devkit/sysroots/x86_64-arago-linux/usr/bin/aarch64-none-linux-gnu-
+CC_ARMV7=${TI_SDK_PATH}/linux-devkit/sysroots/x86_64-arago-linux/usr/bin/arm-none-linux-gnueabihf-
+UBOOT_MACHINE_A53=am62x_evm_a53_defconfig
+
+cp ${PATH_UBT}/configs/${UBOOT_MACHINE_A53} .config
+make ARCH=arm64 CROSS_COMPILE=${CC_ARMV8} menuconfig
+cp .config ${PATH_UBT}/configs/${UBOOT_MACHINE_A53}
+sync

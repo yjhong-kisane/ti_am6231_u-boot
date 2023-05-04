@@ -104,9 +104,11 @@
 	u-boot,dm-spl;
 };
 
+/*
 &sdhci0 {
 	u-boot,dm-spl;
 };
+*/
 
 &sdhci1 {
 	u-boot,dm-spl;
@@ -121,9 +123,11 @@
 };
 
 &usb0 {
+	/*
 	dr_mode = "peripheral";
-	/* Since role switching is not supported in U-Boot */
+	// Since role switching is not supported in U-Boot
 	/delete-property/ extcon;
+	*/
 	u-boot,dm-spl;
 };
 

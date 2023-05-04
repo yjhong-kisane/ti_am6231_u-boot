@@ -27,6 +27,143 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+
+void swap1(char *x, char *y) {
+    char t = *x; *x = *y; *y = t;
+}
+ 
+char* reverse(char *buffer, int i, int j)
+{
+    while (i < j) {
+        swap1(&buffer[i++], &buffer[j--]);
+    }
+ 
+    return buffer;
+}
+
+char* itoa(int value, char* buffer, int base)
+{
+    // 잘못된 입력
+    if (base < 2 || base > 32) {
+        return buffer;
+    }
+ 
+    // 숫자의 절대값을 고려
+    int n = abs(value);
+ 
+    int i = 0;
+    while (n)
+    {
+        int r = n % base;
+ 
+        if (r >= 10) {
+            buffer[i++] = 65 + (r - 10);
+        }
+        else {
+            buffer[i++] = 48 + r;
+        }
+ 
+        n = n / base;
+    }
+ 
+    // 숫자가 0인 경우
+    if (i == 0) {
+        buffer[i++] = '0';
+    }
+ 
+    // 밑이 10이고 값이 음수이면 결과 문자열
+    // 마이너스 기호(-)가 앞에 옵니다.
+    // 다른 기준을 사용하면 값은 항상 부호 없는 것으로 간주됩니다.
+    if (value < 0 && base == 10) {
+        buffer[i++] = '-';
+    }
+ 
+    buffer[i] = '\0'; // null 종료 문자열
+ 
+    // 문자열을 반대로 하여 반환
+    return reverse(buffer, 0, i - 1);
+}
+
+static void gpio_test(void)
+{
+	char TmpBuf[33] = {0, };
+	char StrBuf[128] = {0, };
+
+	int nCnt = 0;
+	int nErr = 0;
+    int nPinNum = 0;
+    for (nPinNum = 0 ; nPinNum < 512 ; nPinNum++)
+    {
+		if(nCnt > 2) {
+			break;
+		}
+
+		memset(TmpBuf, 0, 33);
+		itoa(nPinNum, TmpBuf, 10);
+
+		memset(StrBuf, 0, 128);
+		snprintf(StrBuf, 5 + strlen(TmpBuf) + 1, "gpio_%s\n", TmpBuf);
+
+        nErr = gpio_request(nPinNum, StrBuf);
+        if (nErr) {
+            printf("[%s:%4d:%s] Failed to request gpio#%d\n", 
+                __FILE__, __LINE__, __FUNCTION__, nPinNum);
+			nCnt++;
+            continue;
+        }
+        else
+        {
+			gpio_direction_output(nPinNum, 0);
+			mdelay(10);
+            printf("[%s:%4d:%s] GPIO-%d (%s) Value: %d \n", 
+                    __FILE__, __LINE__, __FUNCTION__, nPinNum, StrBuf, gpio_get_value(nPinNum));
+
+            gpio_set_value(nPinNum, 1);
+            mdelay(10);
+            printf("[%s:%4d:%s] GPIO-%d (%s) Value: %d \n", 
+                    __FILE__, __LINE__, __FUNCTION__, nPinNum, StrBuf, gpio_get_value(nPinNum));
+        }
+    }
+}
+
+static void gpio_set_out_hi(int nGpioNum)
+{
+	// GPIO # as output
+	u32 ret = gpio_request(nGpioNum, "");
+	if (ret < 0) {
+		printf("Unable to request GPIO %d\n", nGpioNum);
+	}
+	ret = gpio_direction_output(nGpioNum, 0);
+	if (ret < 0) {
+		printf("Unable to config GPIO %d\n", nGpioNum);
+	}
+
+	// Set 1 to output
+	printf("Setting GPIO %d to 1\n", nGpioNum);
+	ret = gpio_set_value(nGpioNum, 1);
+	if (ret < 0) {
+		printf("Unable to set GPIO %d\n", nGpioNum);
+	}
+	else
+	{
+		udelay(10000);
+		printf("Getting GPIO %d => %d\n", nGpioNum, gpio_get_value(nGpioNum));
+	}
+
+	// Set 0 to output
+	printf("Setting GPIO %d to 0\n", nGpioNum);
+	ret = gpio_set_value(nGpioNum, 0);
+	if (ret < 0) {
+		printf("Unable to clear GPIO %d\n", nGpioNum);
+	}
+	else
+	{
+		udelay(10000);
+		printf("Getting GPIO %d => %d\n", nGpioNum, gpio_get_value(nGpioNum));
+	}
+}
+
+
 static void reset_phy_lan8710(int nGpioNum)
 {
 	u32 ret = gpio_request(nGpioNum, "Reset_LAN8710");
@@ -37,17 +174,18 @@ static void reset_phy_lan8710(int nGpioNum)
 	if (ret < 0) {
 		printf("Unable to config GPIO %d for LAN8710\n", nGpioNum);
 	}
-
-	mdelay(15);
-
+	
 	// Set 0 to output
 	printf("Setting GPIO %d to 0 for LAN8710\n", nGpioNum);
 	ret = gpio_set_value(nGpioNum, 0);
 	if (ret < 0) {
 		printf("Unable to clear GPIO %d for LAN8710\n", nGpioNum);
 	}
-
-	mdelay(10);
+	else
+	{
+		mdelay(10);
+		printf("Getting GPIO %d => %d\n", nGpioNum, gpio_get_value(nGpioNum));
+	}
 
 	// Set 1 to output
 	printf("Setting GPIO %d to 1 for LAN8710\n", nGpioNum);
@@ -55,12 +193,16 @@ static void reset_phy_lan8710(int nGpioNum)
 	if (ret < 0) {
 		printf("Unable to set GPIO %d for LAN8710\n", nGpioNum);
 	}
+	else
+	{
+		mdelay(10);
+		printf("Getting GPIO %d => %d\n", nGpioNum, gpio_get_value(nGpioNum));
+	}
 }
+
 
 int board_init(void)
 {
-	printf("TI SDK Ver: %s\n", TI_SDK_VER);
-	printf("[%s:%s:%d] TRACE:**********\n", __FILE__, __FUNCTION__, __LINE__);
 	return 0;
 }
 
@@ -220,12 +362,8 @@ static void setup_serial(void)
 #ifdef CONFIG_BOARD_LATE_INIT
 int board_late_init(void)
 {
-	printf("[%s:%s:%d] TRACE:**********\n", __FILE__, __FUNCTION__, __LINE__);
-
-	
-	//reset_phy_lan8710(68);	// (B24) GPIO0_68 (AM6232_PRU_STATUS -> LAN8710_RESET)
-	reset_phy_lan8710(91);	// (B24) GPIO0_68 (AM6232_PRU_STATUS -> LAN8710_RESET)
-
+	printf("[%s:%s:%d] TRACE:********************\n", __FILE__, __FUNCTION__, __LINE__);
+	//gpio_test();
 
 	if (IS_ENABLED(CONFIG_TI_I2C_BOARD_DETECT)) {
 		struct ti_am6_eeprom *ep = TI_AM6_EEPROM_DATA;
@@ -245,6 +383,11 @@ int board_late_init(void)
 	if (get_device_type() != K3_DEVICE_TYPE_GP)
 		env_set("boot_fit", "1");
 
+
+	printf("[%s:%s:%d] TRACE:********************\n", __FILE__, __FUNCTION__, __LINE__);
+	//gpio_set_out_hi(11);	// (F23) GPIO0_11 (AM6232_STATUS_LED1)
+	//reset_phy_lan8710(91);	// (B24) GPIO0_68 (AM6232_PRU_STATUS -> LAN8710_RESET)
+
 	return 0;
 }
 #endif
@@ -253,55 +396,17 @@ int board_late_init(void)
 #define CTRLMMR_USB1_PHY_CTRL	0x43004018
 #define CORE_VOLTAGE		0x80000000
 
-
-
-static void gpio_set_out_hi(int nGpioNum)
-{
-	// GPIO # as output
-	u32 ret = gpio_request(nGpioNum, "");
-	if (ret < 0) {
-		printf("Unable to request GPIO %d\n", nGpioNum);
-	}
-	ret = gpio_direction_output(nGpioNum, 0);
-	if (ret < 0) {
-		printf("Unable to config GPIO %d\n", nGpioNum);
-	}
-
-	udelay(100);
-
-	// Set 1 to output
-	printf("Setting GPIO %d to 1\n", nGpioNum);
-	ret = gpio_set_value(nGpioNum, 1);
-	if (ret < 0) {
-		printf("Unable to set GPIO %d\n", nGpioNum);
-	}
-
-	udelay(100);
-
-	// Set 0 to output
-	printf("Setting GPIO %d to 0\n", nGpioNum);
-	ret = gpio_set_value(nGpioNum, 0);
-	if (ret < 0) {
-		printf("Unable to clear GPIO %d\n", nGpioNum);
-	}
-}
-
-
-
-
-
 #ifdef CONFIG_SPL_BOARD_INIT
 void spl_board_init(void)
 {
 	u32 val;
 
 	printf("TI SDK Ver: %s\n", TI_SDK_VER);
-	printf("[%s:%s:%d] TRACE:**********\n", __FILE__, __FUNCTION__, __LINE__);
 
-	gpio_set_out_hi(11);	// (F23) GPIO0_11 (AM6232_STATUS_LED1)
-	gpio_set_out_hi(13);	// (H21) GPIO0_13 (AM6232_STATUS_LED3)
-	gpio_set_out_hi(14);	// (E24) GPIO0_14 (AM6232_STATUS_LED2)
-	
+	//gpio_test();
+	//gpio_set_out_hi(11);	// (F23) GPIO0_11 (AM6232_STATUS_LED1)
+
+#if 0
 	/* Set USB0 PHY core voltage to 0.85V */
 	val = readl(CTRLMMR_USB0_PHY_CTRL);
 	val &= ~(CORE_VOLTAGE);
@@ -320,6 +425,7 @@ void spl_board_init(void)
 	/* Make sure to mux up to take the SoC 32k from the crystal */
 	writel(MCU_CTRL_DEVICE_CLKOUT_LFOSC_SELECT_VAL,
 	       MCU_CTRL_DEVICE_CLKOUT_32K_CTRL);
+#endif
 
 	/* Init DRAM size for R5/A53 SPL */
 	dram_init_banksize();

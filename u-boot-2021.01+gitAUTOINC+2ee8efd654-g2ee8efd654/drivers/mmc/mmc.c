@@ -2761,7 +2761,13 @@ static int mmc_power_cycle(struct mmc *mmc)
 	 * SD spec recommends at least 1ms of delay. Let's wait for 2ms
 	 * to be on the safer side.
 	 */
+	
+	// NOTE::2023-05-09
+	// https://software-dl.ti.com/processor-sdk-linux/esd/AM62X/08_06_00_42/exports/docs/linux/Foundational_Components/U-Boot/UG-Memory.html
+	// Increase power cycle period 2000 to 4000
+	// -> mmc fail to send stop cmd
 	udelay(2000);
+
 	return mmc_power_on(mmc);
 }
 

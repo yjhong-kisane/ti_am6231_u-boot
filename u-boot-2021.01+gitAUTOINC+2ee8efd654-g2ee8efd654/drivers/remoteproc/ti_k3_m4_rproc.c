@@ -134,7 +134,7 @@ static int k3_m4_unprepare(struct udevice *dev)
 static int k3_m4_load(struct udevice *dev, ulong addr, ulong size)
 {
 	struct k3_m4_privdata *m4 = dev_get_priv(dev);
-	struct k3_m4_boot_data *data = m4->data;
+	//struct k3_m4_boot_data *data = m4->data;
 	u32 boot_vector;
 	void *image_addr = (void *)addr;
 	int ret;
@@ -263,20 +263,20 @@ static void *k3_m4_da_to_va(struct udevice *dev, ulong da, ulong len)
 		if (da >= dev_addr && ((da + len) <= (dev_addr + size))) {
 			offset = da - dev_addr;
 			va = m4->mem[i].cpu_addr + offset;
-			dev_dbg(dev, "%s da=0x%x : va=0x%x \n", __func__, da, va);
+			dev_dbg(dev, "%s da=0x%lx : va=0x%p \n", __func__, da, va);
 			return (__force void *)va;
 		}
 
 		if (da >= bus_addr && (da + len) <= (bus_addr + size)) {
 			offset = da - bus_addr;
 			va = m4->mem[i].cpu_addr + offset;
-			dev_dbg(dev, "%s da=0x%x : va=0x%x \n", __func__, da, va);
+			dev_dbg(dev, "%s da=0x%lx : va=0x%p \n", __func__, da, va);
 			return (__force void *)va;
 		}
 	}
 
 	/* Assume it is DDR region and return da */
-	dev_dbg(dev, "%s DDR da=0x%x \n", __func__, da);
+	dev_dbg(dev, "%s DDR da=0x%lx \n", __func__, da);
 	return map_physmem(da, len, MAP_NOCACHE);
 }
 

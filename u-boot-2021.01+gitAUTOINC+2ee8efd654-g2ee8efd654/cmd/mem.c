@@ -817,7 +817,7 @@ static ulong mem_test_alt(vu_long *buf, ulong start_addr, ulong end_addr,
 	pattern = (vu_long) 0xaaaaaaaa;
 	anti_pattern = (vu_long) 0x55555555;
 
-	debug("%s:%d: length = 0x%.8lx\n", __func__, __LINE__, num_words);
+	printf("%s:%d: length = 0x%.8lx\n", __func__, __LINE__, num_words);
 	/*
 	 * Write the default pattern at each of the
 	 * power-of-two offsets.
@@ -980,6 +980,8 @@ static ulong test_bitflip_comparison(volatile unsigned long *bufa,
 
 		if (ctrlc())
 			return -1UL;
+
+		printf(".");
 	}
 
 	return errs;
@@ -1098,7 +1100,7 @@ static int do_mem_mtest(struct cmd_tbl *cmdtp, int flag, int argc,
 	}
 
 	printf("Testing %08lx ... %08lx:\n", start, end);
-	debug("%s:%d: start %#08lx end %#08lx\n", __func__, __LINE__,
+	printf("%s:%d: start %#08lx end %#08lx\n", __func__, __LINE__,
 	      start, end);
 
 	buf = map_sysmem(start, end - start);
@@ -1111,7 +1113,7 @@ static int do_mem_mtest(struct cmd_tbl *cmdtp, int flag, int argc,
 		}
 
 		printf("Iteration: %6d\r", iteration + 1);
-		debug("\n");
+		printf("\n");
 		if (IS_ENABLED(CONFIG_SYS_ALT_MEMTEST)) {
 			errs = mem_test_alt(buf, start, end, dummy);
 			if (errs == -1UL)

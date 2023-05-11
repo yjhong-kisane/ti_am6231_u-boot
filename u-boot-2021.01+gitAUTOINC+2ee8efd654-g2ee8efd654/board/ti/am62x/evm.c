@@ -17,7 +17,6 @@
 #include <fdt_support.h>
 #include <asm/arch/hardware.h>
 #include <asm/arch/sys_proto.h>
-#include <asm/gpio.h>
 
 #include <asm/gpio.h>		// gpio_request
 #include <linux/delay.h>	// udelay
@@ -567,6 +566,21 @@ void spl_board_init(void)
 	u32 val;
 
 	printf("TI SDK Ver: %s\n", TI_SDK_VER);
+
+//===============================================================================================================
+	// NOTE::2023-05-11
+	// LCD Display Always On
+	// TRM.3648 (PADCFG_CRTL0_CFG0_PADCONFIG122)
+	val = readl(0x000F41E8);
+	printf("[%s:%s:%d] PADCFG_CRTL0_CFG0_PADCONFIG122: 0x%x", __FILE__, __FUNCTION__, __LINE__, val);
+	if(val != 0x7) {
+		writel(0x07, 0x000F41E8);
+		printf(" -> 0x%x\n", readl(0x000F41E8));
+	}
+	else {
+		printf("\n");
+	}
+//===============================================================================================================
 
 	//gpio_test();
 	//gpio_set_out_hi(11);	// (F23) GPIO0_11 (AM6232_STATUS_LED1)

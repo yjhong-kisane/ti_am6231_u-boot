@@ -44,6 +44,29 @@ static struct gpio_desc board_det_gpios[AM62X_LPSK_BRD_DET_COUNT];
 DECLARE_GLOBAL_DATA_PTR;
 
 
+/* 한 비트 클리어 */
+#define BIT_CLR(data, loc)    ((data) &= ~(0x1 << (loc)))
+/* 연속된 여러 비트 클리어 */
+#define BITS_CLR(data, area, loc)     ((data) &= ~((area) << (loc)))
+
+/* 한 비트 설정 */
+#define BIT_SET(data, loc)      ((data) |= (0x1 << (loc)))
+/* 연속된 여러 비트 설정 */
+#define BITS_SET(data, area, loc)  ((data) |= ((area) << (loc)))
+
+/* 한 비트 반전 */
+#define BIT_INVERT(data, loc)   ((data) ^= (0x1 << (loc)))
+/* 연속된 여러 비트 반전 */
+#define BITS_INVERT(data, area, loc)    ((data) ^= ((area) << (loc)))
+
+/* 비트 검사 */
+#define BIT_CHECK(data, loc)    ((data) & (0x1 << (loc)))
+
+/* 비트 추출 */
+#define BITS_EXTRACT(data, area, loc)   (((data) >> (loc)) & (area))
+
+
+#if 0
 void swap1(char *x, char *y) {
     char t = *x; *x = *y; *y = t;
 }
@@ -178,44 +201,141 @@ static void gpio_set_out_hi(int nGpioNum)
 		printf("Getting GPIO %d => %d\n", nGpioNum, gpio_get_value(nGpioNum));
 	}
 }
+#endif	// #if 0
 
-
-static void reset_phy_lan8710(int nGpioNum)
+static void Toggle_Status_Led(void)
 {
-	u32 ret = gpio_request(nGpioNum, "Reset_LAN8710");
-	if (ret < 0) {
-		printf("Unable to request GPIO %d for LAN8710\n", nGpioNum);
-	}
-	ret = gpio_direction_output(nGpioNum, 1);	// Output, HI
-	if (ret < 0) {
-		printf("Unable to config GPIO %d for LAN8710\n", nGpioNum);
-	}
+	u32 val;
 	
-	// Set 0 to output
-	printf("Setting GPIO %d to 0 for LAN8710\n", nGpioNum);
-	ret = gpio_set_value(nGpioNum, 0);
-	if (ret < 0) {
-		printf("Unable to clear GPIO %d for LAN8710\n", nGpioNum);
-	}
-	else
-	{
-		mdelay(10);
-		printf("Getting GPIO %d => %d\n", nGpioNum, gpio_get_value(nGpioNum));
-	}
+	printf("[%s:%s:%d] TRACE:****\n", __FILE__, __FUNCTION__, __LINE__);
 
-	// Set 1 to output
-	printf("Setting GPIO %d to 1 for LAN8710\n", nGpioNum);
-	ret = gpio_set_value(nGpioNum, 1);
-	if (ret < 0) {
-		printf("Unable to set GPIO %d for LAN8710\n", nGpioNum);
-	}
-	else
-	{
-		mdelay(10);
-		printf("Getting GPIO %d => %d\n", nGpioNum, gpio_get_value(nGpioNum));
-	}
+	// (F23) GPIO0_11 (AM6232_STATUS_LED1, D5)
+	val = readl(0x000F402c);
+	//printf("[%s:%s:%d] GPIO0_11 PADCFG: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, val);
+	BIT_CLR(val, 21);	// TX_DIS
+	writel(val, 0x000F402c);
+	//printf("[%s:%s:%d] GPIO0_11 PADCFG: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, readl(0x000F402c));
+
+ 	// (H21) GPIO0_13 (AM6232_STATUS_LED3, D8)
+	val = readl(0x000F4034);
+	//printf("[%s:%s:%d] GPIO0_13 PADCFG: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, val);
+	BIT_CLR(val, 21);	// TX_DIS
+	writel(val, 0x000F4034);
+	//printf("[%s:%s:%d] GPIO0_13 PADCFG: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, readl(0x000F4034));
+
+	// (E24) GPIO0_14 (AM6232_STATUS_LED2, D7)
+	val = readl(0x000F4038);
+	//printf("[%s:%s:%d] GPIO0_14 PADCFG: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, val);
+	BIT_CLR(val, 21);	// TX_DIS
+	writel(val, 0x000F4038);
+	//printf("[%s:%s:%d] GPIO0_14 PADCFG: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, readl(0x000F4038));
+
+	// (B24) GPIO0_68 (AM6232_PRU_STATUS, D9)
+	val = readl(0x000F4114);
+	//printf("[%s:%s:%d] GPIO0_68 PADCFG: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, val);
+	BIT_CLR(val, 21);	// TX_DIS
+	writel(val, 0x000F4114);
+	//printf("[%s:%s:%d] GPIO0_68 PADCFG: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, readl(0x000F4114));
+
+/*
+	// TRM P.3807 (PSC0_PDCTL)
+	val = readl(0x00400300);
+	printf("[%s:%s:%d] PSC0_PDCTL: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, val);
+	BIT_SET(val, 9);	// EMUIHBIE
+	writel(val, 0x00400300);
+	printf("[%s:%s:%d] PSC0_PDCTL: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, readl(0x00400300));
+
+	// TRM P.3811 (PSC0_MDCTL)
+	val = readl(0x00400a00);
+	printf("[%s:%s:%d] PSC0_MDCTL: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, val);
+	BIT_SET(val, 9);	// EMURSTIE
+	BIT_SET(val, 10);	// EMUIHBIE
+	writel(val, 0x00400a00);
+	printf("[%s:%s:%d] PSC0_MDCTL: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, readl(0x00400a00));
+
+	// TRM P.4016 (PLL0_CTRL)
+	val = readl(0x00680020);
+	printf("[%s:%s:%d] PLL0_CTRL: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, val);
+	BIT_SET(val, 15);	// PLL_EN
+	writel(val, 0x00680020);
+	printf("[%s:%s:%d] PLL0_CTRL: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, readl(0x00680020));
+*/
+
+
+// LED (D5, D8, D7, D9) ON ========================================================================================
+
+	// TRM P.8788 - GPIO_SET_DATA01 Register
+	val = readl(0x00600018);
+	//printf("[%s:%s:%d] GPIO_SET_DATA01: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, val);
+	BIT_SET(val, 11);	//GPIO0_11 (Bank 0 Register Bit 11)
+	BIT_SET(val, 13);	//GPIO0_13 (Bank 0 Register Bit 13)
+	BIT_SET(val, 14);	//GPIO0_14 (Bank 0 Register Bit 14)
+	writel(val, 0x00600018);
+	//printf("[%s:%s:%d] GPIO_SET_DATA01: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, readl(0x00600018));
+
+	// TRM P.8786 - GPIO0_DIR01 Register
+	val = readl(0x00600010);
+	//printf("[%s:%s:%d] GPIO0_DIR01: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, val);
+	BIT_CLR(val, 11);	//GPIO0_11 (Bank 0 Register Bit 11)
+	BIT_CLR(val, 13);	//GPIO0_13 (Bank 0 Register Bit 13)
+	BIT_CLR(val, 14);	//GPIO0_14 (Bank 0 Register Bit 14)
+	writel(val, 0x00600010);
+	//printf("[%s:%s:%d] GPIO0_DIR01: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, readl(0x00600010));
+	
+	// TRM P.8789 - GPIO_CLR_DATA01 Register
+	val = readl(0x0060001c);
+	//printf("[%s:%s:%d] GPIO_CLR_DATA01: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, val);
+	BIT_SET(val, 11);	//GPIO0_11 (Bank 0 Register Bit 11)
+	BIT_SET(val, 13);	//GPIO0_13 (Bank 0 Register Bit 13)
+	BIT_SET(val, 14);	//GPIO0_14 (Bank 0 Register Bit 14)
+	writel(val, 0x0060001c);
+	//printf("[%s:%s:%d] GPIO_CLR_DATA01: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, readl(0x0060001c));
+
+
+	// TRM P.8808 - GPIO_SET_DATA45 Register
+	val = readl(0x00600068);
+	//printf("[%s:%s:%d] GPIO_SET_DATA01: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, val);
+	BIT_SET(val, 4);	// GPIO0_68 (Bank 4 Register Bit 4)
+	writel(val, 0x00600068);
+	//printf("[%s:%s:%d] GPIO_SET_DATA01: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, readl(0x00600068));
+
+	// TRM P.8806 - GPIO0_DIR45 Register
+	val = readl(0x00600060);
+	//printf("[%s:%s:%d] GPIO0_DIR45: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, val);
+	BIT_CLR(val, 4);	// GPIO0_68 (Bank 4 Register Bit 4)
+	writel(val, 0x00600060);
+	//printf("[%s:%s:%d] GPIO0_DIR45: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, readl(0x00600060));
+
+	// TRM P.8809 - GPIO_CLR_DATA45 Register
+	val = readl(0x0060006c);
+	//printf("[%s:%s:%d] GPIO_CLR_DATA01: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, val);
+	BIT_SET(val, 4);	// GPIO0_68 (Bank 4 Register Bit 4)
+	writel(val, 0x0060006c);
+	//printf("[%s:%s:%d] GPIO_CLR_DATA01: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, readl(0x0060006c));
+
+	mdelay(10);
+
+
+// LED (D5, D8, D7, D9) OFF =======================================================================================
+
+	// TRM P.8808 - GPIO_SET_DATA45 Register
+	val = readl(0x00600068);
+	//printf("[%s:%s:%d] GPIO_SET_DATA01: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, val);
+	BIT_SET(val, 4);	// GPIO0_68 (Bank 4 Register Bit 4)
+	writel(val, 0x00600068);
+	//printf("[%s:%s:%d] GPIO_SET_DATA01: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, readl(0x00600068));
+
+	// TRM P.8788 - GPIO_SET_DATA01 Register
+	val = readl(0x00600018);
+	//printf("[%s:%s:%d] GPIO_SET_DATA01: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, val);
+	BIT_SET(val, 11);	//GPIO0_11 (Bank 0 Register Bit 11)
+	BIT_SET(val, 13);	//GPIO0_13 (Bank 0 Register Bit 13)
+	BIT_SET(val, 14);	//GPIO0_14 (Bank 0 Register Bit 14)
+	writel(val, 0x00600018);
+	//printf("[%s:%s:%d] GPIO_SET_DATA01: 0x%08x\n", __FILE__, __FUNCTION__, __LINE__, readl(0x00600018));
+
+	return;
 }
-
 
 int board_init(void)
 {
@@ -525,9 +645,9 @@ static int probe_daughtercards(void)
 #ifdef CONFIG_BOARD_LATE_INIT
 int board_late_init(void)
 {
-	printf("[%s:%s:%d] TRACE:********************\n", __FILE__, __FUNCTION__, __LINE__);
-	//gpio_test();
+	Toggle_Status_Led();
 
+#if 0
 	if (IS_ENABLED(CONFIG_TI_I2C_BOARD_DETECT)) {
 		struct ti_am6_eeprom *ep = TI_AM6_EEPROM_DATA;
 
@@ -547,14 +667,11 @@ int board_late_init(void)
 			probe_daughtercards();
 #endif
 	}
-
-	printf("[%s:%s:%d] TRACE:********************\n", __FILE__, __FUNCTION__, __LINE__);
-	//gpio_set_out_hi(11);	// (F23) GPIO0_11 (AM6232_STATUS_LED1)
-	//reset_phy_lan8710(91);	// (B24) GPIO0_68 (AM6232_PRU_STATUS -> LAN8710_RESET)
-
+#endif	// #if 0
+	
 	return 0;
 }
-#endif
+#endif	// #ifdef CONFIG_BOARD_LATE_INIT
 
 #define CTRLMMR_USB0_PHY_CTRL	0x43004008
 #define CTRLMMR_USB1_PHY_CTRL	0x43004018
@@ -582,8 +699,7 @@ void spl_board_init(void)
 	}
 //===============================================================================================================
 
-	//gpio_test();
-	//gpio_set_out_hi(11);	// (F23) GPIO0_11 (AM6232_STATUS_LED1)
+	Toggle_Status_Led();
 
 #if 0
 	/* Set USB0 PHY core voltage to 0.85V */

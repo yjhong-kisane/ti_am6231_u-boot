@@ -327,18 +327,6 @@
 
 	gpio0_pins_default: gpio0-pins-default {
 		pinctrl-single,pins = <
-			AM62X_IOPAD(0x000, PIN_OUTPUT, 7) // (H24) GPIO0_0 (CPU_BOARD_VER0)
-			AM62X_IOPAD(0x004, PIN_OUTPUT, 7) // (G25) GPIO0_1 (CPU_BOARD_VER1)
-			AM62X_IOPAD(0x008, PIN_OUTPUT, 7) // (J24) GPIO0_2 (CPU_BOARD_VER2)
-
-			AM62X_IOPAD(0x00c, PIN_OUTPUT, 7) // (E25) GPIO0_3 (VERSION0)
-			AM62X_IOPAD(0x010, PIN_OUTPUT, 7) // (G24) GPIO0_4 (VERSION1)
-
-			AM62X_IOPAD(0x02c, PIN_OUTPUT, 7) // (F23) GPIO0_11 (AM6232_STATUS_LED1)
-			AM62X_IOPAD(0x034, PIN_OUTPUT, 7) // (H21) GPIO0_13 (AM6232_STATUS_LED3)
-			AM62X_IOPAD(0x038, PIN_OUTPUT, 7) // (E24) GPIO0_14 (AM6232_STATUS_LED2)
-
-			AM62X_IOPAD(0x114, PIN_OUTPUT, 7) // (B24) GPIO0_68 (AM6232_PRU_STATUS -> LAN8710_RESET)
 		>;
 	};
 
@@ -453,6 +441,10 @@
 	pinctrl-0 = <&main_mmc1_pins_default>;
 	ti,driver-strength-ohm = <50>;
 	disable-wp;
+
+	// NOTE::2023-05-12
+	// 일부 SD 카드에서 부팅 안되는 문제 관련 수정
+#if 1
 	no-1-8-v;	//  disable SD card HS modes.
 	
 	// NOTE::2023-05-09
@@ -462,6 +454,7 @@
 	//sdhci-caps-mask = <0x00000006 0x00000000>;	// Limit to DDR50
 	sdhci-caps-mask = <0x00000007 0x00000000>;	// Limit to SD HS
 	//sdhci-caps-mask = <0x00000007 0x00200000>;	// Limit to SD legacy
+#endif
 };
 
 &usbss0 {

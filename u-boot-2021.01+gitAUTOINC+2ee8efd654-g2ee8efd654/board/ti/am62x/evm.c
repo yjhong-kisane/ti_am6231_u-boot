@@ -692,7 +692,7 @@ void spl_board_init(void)
 	printf("[%s:%s:%d] PADCFG_CRTL0_CFG0_PADCONFIG122: 0x%x", __FILE__, __FUNCTION__, __LINE__, val);
 	if(val != 0x7) {
 		writel(0x07, 0x000F41E8);
-		printf(" -> 0x%x\n", readl(0x000F41E8));
+		printf(" -> 0x%x (For LCD Display Always On)\n", readl(0x000F41E8));
 	}
 	else {
 		printf("\n");

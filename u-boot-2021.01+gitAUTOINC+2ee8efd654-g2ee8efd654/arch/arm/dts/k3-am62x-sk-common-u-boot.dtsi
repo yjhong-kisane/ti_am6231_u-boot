@@ -104,11 +104,13 @@
 	u-boot,dm-spl;
 };
 
-/*
 &sdhci0 {
 	u-boot,dm-spl;
 };
-*/
+
+&main_mmc0_pins_default {
+	u-boot,dm-spl;
+};
 
 &sdhci1 {
 	u-boot,dm-spl;

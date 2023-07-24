@@ -135,7 +135,7 @@
 	"console=" CONSOLEDEV ",115200n8\0" \
 	"fdtfile=undefined\0" \
 	"boot=mmc\0" \
-	"bootpart=0:2\0" \
+	"bootpart=0:1\0" \
 	"bootdir=/boot\0" \
 	"bootfile=zImage\0" \
 	"usbtty=cdc_acm\0" \
@@ -146,8 +146,8 @@
 	"dofastboot=0\0" \
 	"emmc_linux_boot=" \
 		"echo Trying to boot Linux from eMMC ...; " \
-		"setenv mmcdev 1; " \
-		"setenv bootpart 1:2; " \
+		"setenv mmcdev 0; " \
+		"setenv bootpart 0:1; " \
 		"setenv mmcroot /dev/mmcblk0p2 rw; " \
 		"run mmcboot;\0" \
 	"emmc_android_bcb_load=" \

@@ -140,10 +140,15 @@ static int spl_mmc_find_device(struct mmc **mmcp, u32 boot_device)
 	mmc_dev = spl_mmc_get_device_index(boot_device);
 	if (mmc_dev < 0)
 		return mmc_dev;
+	
+	// boot_device = BOOT_DEVICE_MMC1(0x09)
+	//printf("[%s:%s:%d] mmc_dev(%d)\n", __FILE__, __FUNCTION__, __LINE__, mmc_dev);
 
 #if CONFIG_IS_ENABLED(DM_MMC)
+	//printf("[%s:%s:%d] TRACE:\n", __FILE__, __FUNCTION__, __LINE__);
 	err = mmc_init_device(mmc_dev);
 #else
+	//printf("[%s:%s:%d] TRACE:\n", __FILE__, __FUNCTION__, __LINE__);
 	err = mmc_initialize(NULL);
 #endif /* DM_MMC */
 	if (err) {
@@ -334,6 +339,9 @@ int spl_mmc_load(struct spl_image_info *spl_image,
 	u32 boot_mode;
 	int err = 0;
 	__maybe_unused int part = 0;
+	
+	//printf("[%s:%s:%d] bootdev->boot_device(%d)\n", 
+	//	__FILE__, __FUNCTION__, __LINE__, bootdev->boot_device);
 
 	/* Perform peripheral init only once */
 	if (!mmc) {
@@ -425,9 +433,23 @@ int spl_mmc_load(struct spl_image_info *spl_image,
 int spl_mmc_load_image(struct spl_image_info *spl_image,
 		       struct spl_boot_device *bootdev)
 {
+// NOTE::2023-07-24
+//[common/spl/spl_mmc.c:spl_mmc_load_image:434] TRACE: CONFIG_SPL_FS_LOAD_PAYLOAD_NAME
+//[common/spl/spl_mmc.c:spl_mmc_load_image:440] TRACE: CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR
+/*
+#ifdef CONFIG_SPL_FS_LOAD_PAYLOAD_NAME
+	printf("[%s:%s:%d] TRACE: CONFIG_SPL_FS_LOAD_PAYLOAD_NAME\n", __FILE__, __FUNCTION__, __LINE__);
+#endif
+#ifdef CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_PARTITION
+	printf("[%s:%s:%d] TRACE: CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_PARTITION\n", __FILE__, __FUNCTION__, __LINE__);
+#endif
+#ifdef CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR
+	printf("[%s:%s:%d] TRACE: CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR\n", __FILE__, __FUNCTION__, __LINE__);
+#endif
+*/
 	return spl_mmc_load(spl_image, bootdev,
 #ifdef CONFIG_SPL_FS_LOAD_PAYLOAD_NAME
-			    CONFIG_SPL_FS_LOAD_PAYLOAD_NAME,
+			    CONFIG_SPL_FS_LOAD_PAYLOAD_NAME,	// "tispl.bin"
 #else
 			    NULL,
 #endif
@@ -437,7 +459,7 @@ int spl_mmc_load_image(struct spl_image_info *spl_image,
 			    0,
 #endif
 #ifdef CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR
-			    CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR);
+			    CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR);	// Offset: 0x400(1024)->tispl.bin
 #else
 			    0);
 #endif

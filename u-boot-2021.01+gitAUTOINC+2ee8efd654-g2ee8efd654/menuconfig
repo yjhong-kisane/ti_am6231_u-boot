@@ -1,6 +1,9 @@
-#/bin/bash
+#!/bin/bash
 
-PATH_UBT=/home/yjhong/kisan/TI_AM62x/u-boot/trunk/u-boot-2021.01_sdk8.6
+PATH_PROJ=/home/yjhong/kisan/TI_AM62x/board_deposit
+
+
+PATH_UBT=${PATH_PROJ}/u-boot/trunk/u-boot-2021.01_sdk8.6
 TI_SDK_PATH=/home/yjhong/kisan/TI_AM62x/ti-processor-sdk-linux-am62xx-evm-08.06.00.42
 CC_ARMV8=${TI_SDK_PATH}/linux-devkit/sysroots/x86_64-arago-linux/usr/bin/aarch64-none-linux-gnu-
 CC_ARMV7=${TI_SDK_PATH}/linux-devkit/sysroots/x86_64-arago-linux/usr/bin/arm-none-linux-gnueabihf-

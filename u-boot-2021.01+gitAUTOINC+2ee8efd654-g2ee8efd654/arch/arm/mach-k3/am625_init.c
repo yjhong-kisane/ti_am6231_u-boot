@@ -243,6 +243,17 @@ u32 spl_mmc_boot_mode(const u32 boot_device)
 	u32 bootmode_cfg = (devstat & MAIN_DEVSTAT_PRIMARY_BOOTMODE_CFG_MASK) >>
 			    MAIN_DEVSTAT_PRIMARY_BOOTMODE_CFG_SHIFT;
 
+	// NOTE::2023-07-25
+	// A53 boot binary (tispl.bin) loading error when BOOTMODE[7]="0" in eMMC boot mode on AM62x
+	// https://e2e.ti.com/support/processors-group/processors/f/processors-forum/1204131/faq-a53-boot-binary-tispl-bin-loading-error-when-bootmode-7-0-in-emmc-boot-mode-on-am62x
+	u32 bootmode = (devstat & MAIN_DEVSTAT_PRIMARY_BOOTMODE_MASK) >>
+                MAIN_DEVSTAT_PRIMARY_BOOTMODE_SHIFT;
+
+	if (bootmode == BOOT_DEVICE_EMMC) {
+		printf("[%s:%s:%d] Bootmode is eMMC.\n", __FILE__, __FUNCTION__, __LINE__);
+		return MMCSD_MODE_EMMCBOOT;
+	}
+
 	switch (boot_device) {
 	case BOOT_DEVICE_MMC1:
 		if ((bootmode_cfg & MAIN_DEVSTAT_PRIMARY_MMC_FS_RAW_MASK) >>

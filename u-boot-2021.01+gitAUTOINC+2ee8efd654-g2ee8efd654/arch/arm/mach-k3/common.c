@@ -133,24 +133,37 @@ void init_env(void)
 {
 #ifdef CONFIG_SPL_ENV_SUPPORT
 	char *part;
+	unsigned char ucBootDevice = 0;
 
 	env_init();
 	env_relocate();
-	switch (spl_boot_device()) {
-	case BOOT_DEVICE_MMC2:
-		part = env_get("bootpart");
-		env_set("storage_interface", "mmc");
-		env_set("fw_dev_part", part);
-		break;
-	case BOOT_DEVICE_SPI:
-		env_set("storage_interface", "ubi");
-		env_set("fw_ubi_mtdpart", "UBI");
-		env_set("fw_ubi_volume", "UBI0");
-		break;
-	default:
-		printf("%s from device %u not supported!\n",
-		       __func__, spl_boot_device());
-		return;
+
+	ucBootDevice = spl_boot_device();
+	switch (ucBootDevice)
+	{
+		case BOOT_DEVICE_MMC2:
+			part = env_get("bootpart");
+			env_set("storage_interface", "mmc");
+			env_set("fw_dev_part", part);
+		//case BOOT_DEVICE_MMC:	
+			printf("[%s:%s] BOOT_DEVICE_MMC\n", __FILE__, __FUNCTION__);
+			break;
+		case BOOT_DEVICE_SPI:
+			env_set("storage_interface", "ubi");
+			env_set("fw_ubi_mtdpart", "UBI");
+			env_set("fw_ubi_volume", "UBI0");			
+			printf("[%s:%s] BOOT_DEVICE_SPI\n", __FILE__, __FUNCTION__);
+			break;
+		case BOOT_DEVICE_EMMC:
+			printf("[%s:%s] BOOT_DEVICE_EMMC\n", __FILE__, __FUNCTION__);
+			break;
+		case BOOT_DEVICE_UART:
+			printf("[%s:%s] BOOT_DEVICE_UART\n", __FILE__, __FUNCTION__);
+			break;
+		default:
+			printf("[%s:%s] Boot device(%u) is not supported!\n",
+				__FILE__, __FUNCTION__, ucBootDevice);
+			return;
 	}
 #endif
 }

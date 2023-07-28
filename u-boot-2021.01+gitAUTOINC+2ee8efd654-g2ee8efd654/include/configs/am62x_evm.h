@@ -161,7 +161,8 @@
 	"args_usb=run finduuid;setenv bootargs console=${console} "	\
 		"${optargs} "						\
 		"root=PARTUUID=${uuid} rw "				\
-		"rootfstype=${mmcrootfstype}\0"				\
+		"rootfstype=${mmcrootfstype} "				\
+		"mem=1900M\0"				\
 	"init_usb=run args_all args_usb\0"				\
 	"get_fdt_usb=load usb ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}\0"	\
 	"get_overlay_usb="						\
@@ -177,10 +178,12 @@
 	"get_fit_usb=load usb ${bootpart} ${addr_fit} "			\
 		"${bootdir}/${name_fit}\0"				\
 	"usbboot=setenv boot usb;"					\
-		"setenv bootpart 0:2;"					\
 		"usb start;"						\
+		"setenv bootpart 0:1;"				\
 		"run findfdt;"						\
+		"setenv bootpart 0:2;"				\
 		"run init_usb;"						\
+		"setenv bootpart 0:1;"				\
 		"run get_kern_usb;"					\
 		"run get_fdt_usb;"					\
 		"run run_kern\0"
@@ -504,7 +507,11 @@
 
 #endif
 
-#ifdef CONFIG_TARGET_AM625_A53_EVM
+/*
+ * am62xx_evm: fix USB DFU boot mode for R5 SPL.
+ * https://git.ti.com/cgit/ti-u-boot/ti-u-boot/commit/?h=ti-u-boot-2021.01-next&id=28c75c2713915a122e5d39311ae7416ca35c0532
+ */
+#if defined(CONFIG_TARGET_AM625_A53_EVM) || defined(CONFIG_SPL_DFU)
 #define EXTRA_ENV_DFUARGS \
 	DFU_ALT_INFO_MMC \
 	DFU_ALT_INFO_EMMC \
